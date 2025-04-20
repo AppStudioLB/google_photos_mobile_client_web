@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Google Photos 업로더</title>
+    <style>
+        /* 드래그 앤 드롭 영역 스타일 */
+        #drop_zone {
+            border: 2px dashed #bbb;
+            border-radius: 5px;
+            width: 90%;
+            margin: 20px auto;
+            padding: 50px 0;
+            text-align: center;
+            font-size: 20px;
+            color: #bbb;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align:center;">Google Photos 파일 업로더</h1>
+
+    <!-- 업로드 완료 후 플래시 메시지 출력 -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul style="color:green; text-align:center;">
+          {% for message in messages %}
+             <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <div id="drop_zone">여기에 파일을 드래그하거나 클릭하여 선택하세요</div>
+    
+    <!-- 파일 업로드 폼 (여러 파일 선택 가능) -->
+    <form id="uploadForm" method="POST" enctype="multipart/form-data">
+        <input type="file" name="files" id="file_input" style="display:none;" multiple>
+        <button type="submit" style="display:none;">업로드</button>
+    </form>
+
+    <script>
+        const dropZone = document.getElementById('drop_zone');
+        const fileInput = document.getElementById('file_input');
+        const form = document.getElementById('uploadForm');
+
+        // 드래그 오버: 기본 동작 방지 및 스타일 변경
+        dropZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            dropZone.style.borderColor = '#333';
+            dropZone.style.color = '#333';
+        });
+
+        // 드래그 리브: 원래 스타일 복구
+        dropZone.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            dropZone.style.borderColor = '#bbb';
+            dropZone.style.color = '#bbb';
+        });
+
+        // 드롭 시: 파일이 선택되면 폼 전송
+        dropZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            dropZone.style.borderColor = '#bbb';
+            dropZone.style.color = '#bbb';
+            let files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                form.submit();
+            }
+        });
+
+        // 클릭하면 파일 탐색기 열기
+        dropZone.addEventListener('click', function() {
+            fileInput.click();
+        });
+
+        // 파일 탐색기에서 파일 선택 후 자동 폼 전송
+        fileInput.addEventListener('change', function() {
+            if (fileInput.files.length > 0) {
+                form.submit();
+            }
+        });
+    </script>
+</body>
+</html>
